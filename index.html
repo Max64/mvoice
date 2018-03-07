@@ -31,14 +31,24 @@
             flex: 38;
 
             display: flex;
-            justify-content: center;
             flex-direction: column;
+            justify-content: center;
             text-align: center;
 
-            font-weight: bold;
             font-size: 2vw;
+        }
+
+        .main .title-main {
             color: #EE2F0B;
             letter-spacing: 0.5em;
+            font-weight: bold;
+        }
+
+        .main .title-secondary {
+            margin-top: 2vh;
+            font-size: 70%;
+            color: black;
+            letter-spacing: 0.3em;
         }
 
         .main .center img {
@@ -51,29 +61,58 @@
             flex: 24;
 
             display: flex;
-            justify-content: space-around;
             flex-direction: column;
+            justify-content: space-around;
             text-align: center;
 
             font-size: 1.2vw;
-            font-weight: bold;
             color: black;
             letter-spacing: 0.2em;
         }
 
-        .main .center .play-controls {
+        .main .center .center-group {
             display: flex;
-            justify-content: space-between;
-            flex-direction: column;
+            flex-direction: row;
+            justify-content: center;
             text-align: center;
+        }
+
+        .main .center .play-button-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+
+            text-align: center;
+            padding-left: 5vw;
+
+            -ms-transform: translateX(-70%); /* IE 9 */
+            -webkit-transform: translateX(-70%); /* Safari */
+            transform: translateX(-70%);
+        }
+
+        #photo {
+            z-index: -1;
+            opacity: 0;
+        }
+
+        #photo-img {
+            height: 10vw;
+            width: 10vw;
+
+            min-width: 100px;
+            min-height: 100px;
+        }
+
+        #countdown {
+            margin-top: 1em;
         }
 
         .main .bottom {
             flex: 38;
 
             display: flex;
-            justify-content: start;
             flex-direction: column;
+            justify-content: start;
             text-align: center;
 
             padding-top: 3em;
@@ -87,6 +126,11 @@
         .main .bottom #date {
             font-size: 80%;
             margin-top: 1em;
+        }
+
+        .main .footer {
+            padding: 1em;
+            margin-right: -30%
         }
 
 
@@ -126,6 +170,11 @@
                 height: 15vw;
                 width: 15vw;
             }
+
+            .main .footer {
+                padding: 1em;
+                margin: auto;
+            }
         }
 
     </style>
@@ -134,18 +183,35 @@
 
 <div class="main">
     <div class="title">
-        MOTIVATION VOICE
+        <div class="title-main">
+            MOTIVATION VOICE
+        </div>
+
+        <div class="title-secondary">
+            your everyday motivation
+        </div>
     </div>
 
     <div class="center">
-        <div class="play-controls">
-            <div>
-                <img id="play-button" src="img/play-circle-outline.png"/>
+        <div class="center-group">
+            <div id="photo">
+                <div>
+                    <img id="photo-img" />
+                </div>
+                <div>
+                    - Steve Jobs
+                </div>
             </div>
-            <div id="countdown">-0:25</div>
-        </div>
 
-        <audio id="audio" src="audio/test.mp3" ></audio>
+            <div class="play-button-group">
+                <div>
+                    <img id="play-button" src="img/play-circle-outline.png"/>
+                </div>
+
+                <div id="countdown">-0:25</div>
+                <audio id="audio" src="" ></audio>
+            </div>
+        </div>
     </div>
 
     <div class="bottom">
@@ -155,6 +221,10 @@
 
         <div id="date">
         </div>
+    </div>
+
+    <div class="footer">
+        feeback: mymotivationvoice@gmail.com
     </div>
 </div>
 
@@ -167,15 +237,20 @@
     var date =  new Date();
 
     var y = date.getFullYear().toString();
-    var m = (date.getMonth() + 1).toString();
-    var d = (date.getDate()).toString();
 
-    document.getElementById("date").innerHTML =
-        (d.length == 1 ? ('0' + d) : d)
-        + "."
-        + (m.length == 1 ? ('0' + m) : m)
-        + "."
-        + y;
+    var m = (date.getMonth() + 1).toString();
+    m = (m.length == 1 ? ('0' + m) : m);
+
+    var d = (date.getDate()).toString();
+    d = (d.length == 1 ? ('0' + d) : d);
+
+    var fileName = d + '-' + m + '-' + y;
+
+    document.getElementById("date").innerHTML = d + "." + m + "." + y;
+
+    document.getElementById("audio").src = 'files/' + fileName + '.mp3';
+    // document.getElementById("audio").src = 'audio/test.mp3';
+    document.getElementById("photo-img").src = 'files/' + fileName + '.png';
 
 
     // Audio
@@ -193,10 +268,7 @@
     }, false);
 
     audio.addEventListener('ended', function(){
-        paused = true;
-        playButtonImg.src="img/play-circle-outline.png";
-
-        animateRight();
+        animate();
     });
 
     var playButtonImg = document.getElementById("play-button");
@@ -241,14 +313,25 @@
         countdown.innerHTML = '-' + m + ":" + s;
     }
 
-    function animateRight() {
+    function animate() {
         anime({
-            targets: '.play-controls',
+            targets: '.play-button-group',
             translateX: {
-                value: '70%',
-                duration: 1000
+                value: ['-70%', '0'],
+                duration: 1200
             },
-            easing: 'linear'
+            easing: 'linear',
+            complete: function(anim) {
+                paused = true;
+                playButtonImg.src="img/play-circle-outline.png";
+            }
+        });
+
+        anime({
+            targets: '#photo',
+            opacity: 1,
+            duration: 1200,
+            easing: 'easeInQuad'
         });
     }
 
