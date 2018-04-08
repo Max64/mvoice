@@ -1,0 +1,17 @@
+{
+   "default": {
+	   "voice": "default_Brian-Tracy.mp3",
+	   "picture": "Brian-Tracy.png",
+	   "signature": "Brian Tracy"
+   },
+      "08-04-2018": {
+	   "voice": "09-03-2018_Eric-Thomas.mp3",
+	   "picture": "Eric-Thomas.png",
+	   "signature": "Eric Thomas"
+   },
+      "09-04-2018": {
+	   "voice": "10-03-2018_Steve-Jobs.mp3",
+	   "picture": "Steve-Jobs.png",
+	   "signature": "Steve Jobs"
+   }
+}
