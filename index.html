@@ -21,7 +21,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            align-items: center;
+            align-items: stretch;
             height: 100%;
 
             font-family: 'Roboto', sans-serif;
@@ -51,60 +51,76 @@
             letter-spacing: 0.3em;
         }
 
-        .main .center img {
-            height: 8vw;
-            width: 8vw;
-            cursor: pointer;
-        }
-
         .main .center {
             flex: 24;
-
             display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            text-align: center;
+            flex-direction: row;
+            align-items: stretch;
 
             font-size: 1.2vw;
             color: black;
             letter-spacing: 0.2em;
         }
 
-        .main .center .center-group {
+        .photo-group {
+            flex: 50%;
+            padding-right: 2vw;
+
+            height: 12vw;
+            min-height: 100px;
+
             display: flex;
             flex-direction: row;
-            justify-content: center;
-            text-align: center;
+            justify-content: flex-end;
         }
 
-        .main .center .play-button-group {
+        .photo-img-wrapper {
             display: flex;
             flex-direction: column;
-            justify-content: start;
-
-            text-align: center;
-            padding-left: 5vw;
-
-            -ms-transform: translateX(-70%); /* IE 9 */
-            -webkit-transform: translateX(-70%); /* Safari */
-            transform: translateX(-70%);
-        }
-
-        #photo {
-            z-index: -1;
-            opacity: 0;
+            justify-content: center;
         }
 
         #photo-img {
-            height: 10vw;
-            width: 10vw;
-
-            min-width: 100px;
-            min-height: 100px;
+            height: 12vw;
+            width: 12vw;
         }
 
-        #countdown {
-            margin-top: 1em;
+        .main .center .play-button-group {
+            flex: 50%;
+            padding-left: 2vw;
+
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .main .center .play-button-column {
+            height: 12vw;
+            min-height: 100px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            align-items: center;
+        }
+
+        #play-button-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        #play-button {
+            height: 8vw;
+            width: 8vw;
+            cursor: pointer;
+        }
+
+        #countdown-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100%;
         }
 
         .main .bottom {
@@ -146,11 +162,6 @@
             .main .bottom {
                 font-size: 2.6vw;
             }
-
-            .main .center img {
-                height: 10vw;
-                width: 10vw;
-            }
         }
 
         @media screen and (max-width: 576px) {
@@ -159,16 +170,21 @@
             }
 
             .main .center {
-                font-size: 3vw;
+                font-size: 2.5vw;
             }
 
             .main .bottom {
                 font-size: 3.75vw;
             }
 
-            .main .center img {
-                height: 15vw;
-                width: 15vw;
+            #photo-img {
+                min-width: 100px;
+                min-height: 100px;
+            }
+
+            #play-button {
+                min-width: 50px;
+                min-height: 50px;
             }
 
             .main .footer {
@@ -193,24 +209,28 @@
     </div>
 
     <div class="center">
-        <div class="center-group">
-            <div id="photo">
-                <div>
-                    <img id="photo-img" />
-                </div>
-                <div>
-                    - Steve Jobs
-                </div>
+        <div class="photo-group">
+            <div class="photo-img-wrapper">
+                <img id="photo-img" src="img/question.png" />
             </div>
+        </div>
 
-            <div class="play-button-group">
-                <div>
+        <div class="play-button-group">
+            <div class="play-button-column">
+                <div style="flex: 20%">
+                </div>
+
+                <div id="play-button-wrapper" style="flex: 60%">
                     <img id="play-button" src="img/play-circle-outline.png"/>
                 </div>
 
-                <div id="countdown">-0:25</div>
-                <audio id="audio" src="" ></audio>
+                <div id="countdown-wrapper" style="flex: 20%">
+                    <span id="countdown">
+                        -0:00
+                    </span>
+                </div>
             </div>
+            <audio id="audio" src="" ></audio>
         </div>
     </div>
 
@@ -234,45 +254,66 @@
 
     // Date
 
-    var date =  new Date();
+    var date = initDate();
 
-    var y = date.getFullYear().toString();
+    getFileFromServer("sources/sources.json", function(text) {
+        var sources = JSON.parse(text);
+        var source = sources[date] ? sources[date] : sources.default;
 
-    var m = (date.getMonth() + 1).toString();
-    m = (m.length == 1 ? ('0' + m) : m);
+        document.getElementById("audio").src = 'sources/' + source.voice;
+        document.getElementById("play-button").addEventListener("click", playButtonClicked);
 
-    var d = (date.getDate()).toString();
-    d = (d.length == 1 ? ('0' + d) : d);
+        var audio = document.getElementById("audio");
 
-    var fileName = d + '-' + m + '-' + y;
+        audio.addEventListener('loadedmetadata', function() {
+            updateCountdown();
+        });
 
-    document.getElementById("date").innerHTML = d + "." + m + "." + y;
+        audio.addEventListener("timeupdate", function() {
+            updateCountdown();
+        }, false);
 
-    document.getElementById("audio").src = 'files/' + fileName + '.mp3';
-    // document.getElementById("audio").src = 'audio/test.mp3';
-    document.getElementById("photo-img").src = 'files/' + fileName + '.png';
+        audio.addEventListener('ended', function(){
+            playButtonImg.src="img/play-circle-outline.png";
+            paused = true;
 
-
-    // Audio
-
-    document.getElementById("play-button").addEventListener("click", playButtonClicked);
-
-    var audio = document.getElementById("audio");
-
-    audio.addEventListener('loadedmetadata', function() {
-        updateCountdown();
-    });
-
-    audio.addEventListener("timeupdate", function() {
-        updateCountdown();
-    }, false);
-
-    audio.addEventListener('ended', function(){
-        animate();
+            document.getElementById("photo-img").src = 'sources/' + source.picture;
+        });
     });
 
     var playButtonImg = document.getElementById("play-button");
     var paused = true;
+
+    function initDate() {
+        var date =  new Date();
+
+        var y = date.getFullYear().toString();
+
+        var m = (date.getMonth() + 1).toString();
+        m = (m.length == 1 ? ('0' + m) : m);
+
+        var d = (date.getDate()).toString();
+        d = (d.length == 1 ? ('0' + d) : d);
+
+        document.getElementById("date").innerHTML = d + "." + m + "." + y;
+
+        return d + '-' + m + '-' + y;
+    }
+
+    function getFileFromServer(url, doneCallback) {
+        var xhr;
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = handleStateChange;
+        xhr.open("GET", url, true);
+        xhr.send();
+
+        function handleStateChange() {
+            if (xhr.readyState === 4) {
+                doneCallback(xhr.status == 200 ? xhr.responseText : null);
+            }
+        }
+    }
 
     function playButtonClicked(){
         if (paused) {
@@ -311,28 +352,6 @@
         m = m > 0 ? m : '0';
 
         countdown.innerHTML = '-' + m + ":" + s;
-    }
-
-    function animate() {
-        anime({
-            targets: '.play-button-group',
-            translateX: {
-                value: ['-70%', '0'],
-                duration: 1200
-            },
-            easing: 'linear',
-            complete: function(anim) {
-                paused = true;
-                playButtonImg.src="img/play-circle-outline.png";
-            }
-        });
-
-        anime({
-            targets: '#photo',
-            opacity: 1,
-            duration: 1200,
-            easing: 'easeInQuad'
-        });
     }
 
 </script>
