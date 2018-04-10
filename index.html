@@ -85,6 +85,12 @@
             width: 12vw;
         }
 
+        #signature {
+            margin-top: 10px;
+            text-align: center;
+            visibility: hidden;
+        }
+
         .main .center .play-button-group {
             flex: 50%;
             padding-left: 2vw;
@@ -221,6 +227,7 @@
         <div class="photo-group">
             <div class="photo-img-wrapper">
                 <img id="photo-img" src="img/question.png" />
+                <span id="signature"></span>
             </div>
         </div>
 
@@ -271,6 +278,7 @@
 
         document.getElementById("audio").src = 'sources/' + source.voice;
         document.getElementById("play-button").addEventListener("click", playButtonClicked);
+        document.getElementById("signature").textContent = source.signature;
 
         var audio = document.getElementById("audio");
 
@@ -285,6 +293,8 @@
         audio.addEventListener('ended', function(){
             playButtonImg.src="img/play-circle-outline.png";
             paused = true;
+
+            document.getElementById("signature").style.visibility = "visible";
 
             document.getElementById("photo-img").src = 'sources/' + source.picture;
         });
