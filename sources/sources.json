@@ -13,5 +13,10 @@
 	   "voice": "10-03-2018_Steve-Jobs.mp3",
 	   "picture": "Steve-Jobs.png",
 	   "signature": "Steve Jobs"
+   },
+      "12-04-2018": {
+	   "voice": "Mark Zuckerberg.mp3",
+	   "picture": "Mark-Zuckerberg.jpg",
+	   "signature": "Mark Zuckerberg"
    }
 }
